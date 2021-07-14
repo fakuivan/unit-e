@@ -1,6 +1,6 @@
 from sympy.physics.units.definitions import *
 from sympy.physics.units import Quantity
-from sympy.physics.units.prefixes import micro, milli, kilo
+from sympy.physics.units.prefixes import micro, milli, kilo, mega
 from .sympy_helpers import unit_relative_to, unit_with_prefix
 from sympy import Rational, pi
 
@@ -10,8 +10,12 @@ mV = unit_with_prefix(milli, V)
 kHz = unit_with_prefix(kilo, Hz)
 rpm = unit_relative_to(Quantity("rpm"), Rational("1/60"), 1/s)
 kohm = unit_with_prefix(kilo, ohm)
+Mohm = unit_with_prefix(mega, ohm)
 mohm = unit_with_prefix(milli, ohm)
 mH = unit_with_prefix(milli, henry)
+mA = unit_with_prefix(milli, A)
+uA = unit_with_prefix(micro, A)
+
 
 # I'm not sure how one would define or convert from angular frequency to
 # pulsing frequency with sympy (it doesn't help that these units are not
