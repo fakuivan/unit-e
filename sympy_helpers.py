@@ -1,4 +1,5 @@
-from sympy import Expr, sympify, latex
+from sympy import Expr, Mul, Pow, sympify, latex
+from functools import partial
 from sympy.physics.units import UnitSystem, Quantity
 from sympy.physics.units.prefixes import Prefix
 from sympy.physics.units.systems import SI
@@ -27,3 +28,27 @@ def unit_with_prefix(factor: Prefix, unit: Quantity):
             abbrev=f"{factor.abbrev}{unit.abbrev}",
             latex_repr=f"\\text{{{latex(factor.abbrev)}}} {{{latex(unit)}}}"),
         factor, unit)
+
+def split_unit(expr: Expr, loose=False) -> tuple[Expr, Expr]:
+    """
+    Splits a quantity into a factor and unit part, where the factor
+    part is guaranteed to not contain any Quantity objects, unless
+    ``loose=True``, in which case as much of the unit part will be
+    removed as possible (or currently implemented) from the factor part.
+    """
+    self_ = partial(split_unit, loose=loose)
+    if not expr.has(Quantity):
+        return (expr, 1)
+    if isinstance(expr, Quantity):
+        return (1, expr)
+    if isinstance(expr, Mul):
+        factors, units = zip(*map(self_, expr.args))
+        return Mul(*factors), Mul(*units)
+    if isinstance(expr, Pow):
+        base, exp = expr.args
+        factor, unit = self_(base)
+        return (factor**exp, unit**exp)
+    return (expr, 1) if loose else (1, expr)
+
+def split_unit_form(expr: Expr, loose=True) -> Expr:
+    return Mul(*split_unit(expr, loose=loose), evaluate=False)
