@@ -2,7 +2,6 @@ from typing import Callable, Literal, NamedTuple, Optional, TypeVar, Dict, Union
 from .sympy_helpers import to_basis
 from sympy import Expr
 from sympy.physics.units import UnitSystem, Quantity
-from sympy.physics.units.util import convert_to
 from sympy.physics.units.systems import SI
 from functools import cache
 from random import getrandbits
@@ -84,8 +83,7 @@ class NumericalBasis(NamedTuple):
     def to_scalar(self, units_of: Expr, numeric, **kwargs):
         type_ = kwargs.get('type', float_or_complex)
         as_expr = kwargs.get('as_expr', False)
-        factor = convert_to(units_of, self.symb_basis, self.proxy_system
-            ).xreplace(self.numeric_map)
+        factor = self.to_numeric(units_of, type=type_, as_expr=as_expr)
         symb = numeric / factor
         return symb if as_expr else type_(symb)
 
