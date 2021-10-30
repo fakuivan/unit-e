@@ -26,7 +26,7 @@ def unit_with_prefix(factor: Prefix, unit: Quantity):
     return unit_relative_to(
         Quantity(f"{factor.name}{unit.name}",
             abbrev=f"{factor.abbrev}{unit.abbrev}",
-            latex_repr=f"\\text{{{latex(factor.abbrev)}}} {{{latex(unit)}}}"),
+            latex_repr=f"\\mathrm{{{latex(factor.abbrev)}}} {{{latex(unit)}}}"),
         factor, unit)
 
 def split_unit(expr: Expr, loose=False) -> tuple[Expr, Expr]:
