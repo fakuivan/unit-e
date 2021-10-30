@@ -1,8 +1,10 @@
 from sympy import Expr, Mul, Pow, sympify, latex
 from functools import partial
+from sympy import Dummy
 from sympy.physics.units import UnitSystem, Quantity
 from sympy.physics.units.prefixes import Prefix
 from sympy.physics.units.systems import SI
+from typing import Callable
 default_sys = SI
 
 # mitigation for https://github.com/sympy/sympy/issues/21463
@@ -52,3 +54,33 @@ def split_unit(expr: Expr, loose=False) -> tuple[Expr, Expr]:
 
 def split_unit_form(expr: Expr, loose=True) -> Expr:
     return Mul(*split_unit(expr, loose=loose), evaluate=False)
+
+def without_units(
+    expr: Expr,
+    mapf: Callable[
+        [Callable[[Quantity], Dummy], Expr],
+        Expr
+    ]) -> Expr:
+    """
+    Sympy is stupid and it confuses variables with units
+    
+    To fix this we first convert units to dummy variables, apply
+    the map function `mapf` and then replace the dummies back to
+    units
+    """
+    is_quantity = lambda x: isinstance(x, Quantity)
+    dmap = {}
+    def get_dummy(quantity):
+        nonlocal dmap
+        if quantity not in dmap:
+            dummy = Dummy()
+            dmap[quantity] = dummy
+        return dmap[quantity]
+
+    def dummify(expr):
+        return expr.replace(is_quantity,
+            lambda q: get_dummy(q))
+
+    new_expr = mapf(dummify, dummify(expr))
+    return new_expr.subs({v: k for k, v in dmap.items()})
+
