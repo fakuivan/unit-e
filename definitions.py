@@ -1,6 +1,6 @@
 from sympy.physics.units.definitions import *
 from sympy.physics.units import Quantity
-from sympy.physics.units.prefixes import micro, milli, kilo, mega
+from sympy.physics.units.prefixes import micro, milli, kilo, mega, nano
 from .sympy_helpers import unit_relative_to, unit_with_prefix
 from sympy import Rational, pi
 
@@ -12,7 +12,10 @@ rpm = unit_relative_to(Quantity("rpm"), Rational("1/60"), 1/s)
 kohm = unit_with_prefix(kilo, ohm)
 Mohm = unit_with_prefix(mega, ohm)
 mohm = unit_with_prefix(milli, ohm)
+uF = unit_with_prefix(micro, farad)
+nF = unit_with_prefix(nano, farad)
 mH = unit_with_prefix(milli, henry)
+uH = unit_with_prefix(micro, henry)
 mA = unit_with_prefix(milli, A)
 uA = unit_with_prefix(micro, A)
 
