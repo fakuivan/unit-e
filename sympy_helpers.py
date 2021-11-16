@@ -1,6 +1,7 @@
 from sympy import Expr, Mul, Pow, sympify, latex
 from functools import partial
 from sympy import Dummy
+from sympy.core.basic import Basic
 from sympy.physics.units import UnitSystem, Quantity
 from sympy.physics.units.prefixes import Prefix
 from sympy.physics.units.systems import SI
@@ -84,3 +85,10 @@ def without_units(
     new_expr = mapf(dummify, dummify(expr))
     return new_expr.subs({v: k for k, v in dmap.items()})
 
+def usubs(var: Basic, val: Basic, expr: Basic):
+    return without_units(expr,
+        lambda dummify, expr: expr.subs(
+            var, dummify(val)))
+
+def var_in(var: Basic, unit: Basic, expr: Basic):
+    return usubs(var, var/unit, expr)
